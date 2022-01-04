@@ -1,37 +1,32 @@
-FROM node:4.8.3
-MAINTAINER Rocket.Chat Team <buildmaster@rocket.chat>
+FROM node:14-alpine AS builder
+LABEL maintainer="Amir Moradi - https://linkedin/in/amirhmoradi"
 
-RUN npm install -g coffee-script yo generator-hubot  &&  \
-	useradd hubot -m
-
-USER hubot
-
-WORKDIR /home/hubot
-
-ENV BOT_NAME "rocketbot"
+ENV npm_config_loglevel=verbose
 ENV BOT_OWNER "No owner specified"
-ENV BOT_DESC "Hubot with rocketbot adapter"
-ENV HUBOT_LOG_LEVEL "error"
+ENV BOT_DESC "Hubot with the Rocket.Chat adapter"
 
-ENV EXTERNAL_SCRIPTS=hubot-diagnostics,hubot-help,hubot-google-images,hubot-google-translate,hubot-pugme,hubot-maps,hubot-rules,hubot-shipit
-
-RUN yo hubot --owner="$BOT_OWNER" --name="$BOT_NAME" --description="$BOT_DESC" --defaults && \
-	sed -i /heroku/d ./external-scripts.json && \
-	sed -i /redis-brain/d ./external-scripts.json && \
-	npm install hubot-scripts
-
-ADD . /home/hubot/node_modules/hubot-rocketchat
-
-# hack added to get around owner issue: https://github.com/docker/docker/issues/6119
 USER root
-RUN chown hubot:hubot -R /home/hubot/node_modules/hubot-rocketchat
+RUN apk add --update \
+    git && \
+    adduser -S hubot && \
+    addgroup -S hubot && \
+    touch ~/.bashrc && \
+    npm install --global npm@latest && \
+    npm install -g coffeescript && \
+    mkdir /home/hubot/scripts/
+
+FROM builder AS final
+
+WORKDIR /home/hubot/
+
+COPY package.json /home/hubot/
+COPY bin/hubot /home/hubot/bin/
+RUN chown -R hubot:hubot /home/hubot/
+
 USER hubot
+# EXTERNAL_SCRIPTS is managed in bin/hubot script.
+#ENV EXTERNAL_SCRIPTS=hubot-diagnostics,hubot-google-images,hubot-google-translate,hubot-pugme,hubot-maps,hubot-rules,hubot-shipit
+RUN npm install --no-audit
 
-RUN cd /home/hubot/node_modules/hubot-rocketchat && \
-	npm install && \
-	#coffee -c /home/hubot/node_modules/hubot-rocketchat/src/*.coffee && \
-	cd /home/hubot
-
-CMD node -e "console.log(JSON.stringify('$EXTERNAL_SCRIPTS'.split(',')))" > external-scripts.json && \
-	npm install $(node -e "console.log('$EXTERNAL_SCRIPTS'.split(',').join(' '))") && \
-	bin/hubot -n $BOT_NAME -a rocketchat
+VOLUME ["/home/hubot/scripts"]
+CMD ["/bin/ash", "/home/hubot/bin/hubot"]

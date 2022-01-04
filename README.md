@@ -1,4 +1,4 @@
-![Rocket.Chat logo](https://rocket.chat/images/logo/logo-dark.svg?v3)
+![Rocket.Chat logo](https://open.rocket.chat/images/logo/logo.svg)
 
 [![Rocket.Chat](https://open.rocket.chat/api/v1/shield.svg?type=channel&name=Rocket.Chat&channel=hubot)](https://open.rocket.chat/channel/hubot)
 [![Test Coverage](https://codeclimate.com/github/RocketChat/hubot-rocketchat/badges/coverage.svg)](https://codeclimate.com/github/RocketChat/hubot-rocketchat/coverage)
@@ -135,10 +135,9 @@ relevant to Hubot. It has some additional configs, [documented here][rcsdk-env].
 | Env variable           | Description                                           |
 | ---------------------- | ----------------------------------------------------- |
 | **Hubot**		           | A subset of relevant [Hubot env vars][hubot-env]     |
-| `HUBOT_ADAPTER`        | Set to `rocketchat` (or pass as launch argument)      |
-| `HUBOT_NAME`           | The programmatic name for listeners                   |
-| `HUBOT_ALIAS`          | An alternate name for the bot to respond to           |
-| `HUBOT_LOG_LEVEL`      | The minimum level of logs to output (error)                   |
+| `BOT_NAME` / `HUBOT_NAME`   | The programmatic name for listeners                   |
+| `BOT_ALIAS` / `HUBOT_ALIAS`          | An alternate name for the bot to respond to           |
+| `HUBOT_LOG_LEVEL`      | Verbosity of the bots console logs. Can be **info, warn or error**  |
 | `HUBOT_HTTPD`          | If the bot needs to listen to or make HTTP requests   |
 | **Rocket.Chat SDK**    | A subset of relevant [SDK env vars][rcsdk-env]        |
 | `ROCKETCHAT_URL`*      | Local Rocketchat address (start before the bot)       |
@@ -158,7 +157,7 @@ relevant to Hubot. It has some additional configs, [documented here][rcsdk-env].
 
 
 Be aware you *must* add the bot's user as a member of the new private group(s)
-before it will respond.
+before it will respond. If you attempt to start the bot with a room listed in the ROCKETCHAT_ROOM variable that it's not already a member of, the bot will error on startup.
 
 ## Connecting to Rocket.Chat
 

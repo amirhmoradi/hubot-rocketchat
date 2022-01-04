@@ -45,18 +45,21 @@
   },
   "main": "index.js",
   "dependencies": {
-    "@rocket.chat/sdk": "^0.2.1",
-    "hubot": "3"
+    "@rocket.chat/sdk": "https://github.com/RocketChat/Rocket.Chat.js.SDK.git",
+    "hubot": "^3.3.2",
+    "coffeescript": "^2.6.1",
+		"hubot-help": "^1.0.1",
+		"hubot-rocketchat": "rocketchat/hubot-rocketchat"
   },
   "peerDependencies": {
-    "hubot": "3"
+    "hubot": "3.3.2"
   },
   "devDependencies": {
-    "base64-url": "^2.0.0",
-    "debug": "^2.6.9",
+    "base64-url": "^2.3.3",
+    "debug": "^4.3.3",
     "fresh": "^0.5.2",
-    "mime": "^1.4.1",
-    "morgan": "^1.9.1",
-    "negotiator": "^0.6.1"
+    "mime": "^3.0.0",
+    "morgan": "^1.10.0",
+    "negotiator": "^0.6.2"
   }
 }
