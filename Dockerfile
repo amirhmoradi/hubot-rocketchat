@@ -1,7 +1,7 @@
 FROM node:14-alpine AS builder
 LABEL maintainer="Amir Moradi - https://linkedin/in/amirhmoradi"
 
-ENV npm_config_loglevel=verbose
+ENV npm_config_loglevel=error
 ENV BOT_OWNER "No owner specified"
 ENV BOT_DESC "Hubot with the Rocket.Chat adapter"
 
@@ -12,7 +12,7 @@ RUN apk add --update \
     addgroup -S hubot && \
     touch ~/.bashrc && \
     npm install --global npm@latest && \
-    npm install -g coffeescript && \
+    npm install --global coffeescript && \
     mkdir /home/hubot/scripts/
 
 FROM builder AS final

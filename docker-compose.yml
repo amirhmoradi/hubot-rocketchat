@@ -1,6 +1,27 @@
 version: "3.7"
+
 services:
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=hubot-brain
+  mongo-express:
+    depends_on:
+      - mongo
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
   rocketbot:
+    depends_on:
+      - mongo
     image: princecloud/hubot-rocketchat
     environment:
      - ROCKETCHAT_URL=https://rocket.example.com
@@ -9,14 +30,23 @@ services:
      - ROCKETCHAT_PASSWORD=supersecret
      - BOT_NAME=hubot
      - ROCKETCHAT_ROOM=GENERAL
-     - BOT_ALIAS=hubot
+     - BOT_ALIAS=bot
      - LISTEN_ON_ALL_PUBLIC=false
+     - NODE_DEBUG=true
      - HUBOT_LOG_LEVEL=verbose
+     - npm_config_loglevel=verbose
      - RESPOND_TO_DM=true
      - RESPOND_TO_EDITED=false
      - RESPOND_TO_LIVECHAT=false
      - INTEGRATION_ID=hubot
-     - EXTERNAL_SCRIPTS=hubot-help,hubot-rocketchat-diagnostics,git+https://github.com/amirhmoradi/hubot-rocketchat-standup.git
-     - npm_config_loglevel=info
+     - EXTERNAL_SCRIPTS=hubot-mongodb-brain-evo,hubot-help,hubot-rocketchat-diagnostics,hubot-brain-inspect,hubot-rocketchat-clickup,hubot-rocketchat-standup
+     - MONGODB_URL=mongodb://root:example@mongo/?replicaSet=rs0
+     - MONGODB_DB_NAME=hubot-brain
+     - MONGODB_BRAIN_COLLECTION=brain
+     - HUBOT_CONVERSATION=true
+     - CLICKUP_TEAM_ID=12344
+     - CLICKUP_API_TOKEN=pk_12345_ABDC
+     - CLICKUP_CUSTOM_KEY=abc
+     - CLICKUP_REPLY_IN_THREAD=true
     volumes:
      - ./scripts:/home/hubot/scripts
